@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Will You Be My Valentine? 💝</title>
+  <style>
+    :root{
+      --bg-start:#ffafbd;
+      --bg-end:#ffc3a0;
+      --btn:#ff6b6b;
+      --btn-hover:#ff8787;
+      --text:#ff4757;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh; overflow:hidden;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--text);
+      background:linear-gradient(135deg,var(--bg-start),var(--bg-end));
+      display:flex; align-items:center; justify-content:center;
+    }
+    .page{
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .card{
+      background:rgba(255,255,255,.88);
+      padding:28px 32px; border-radius:18px;
+      box-shadow:0 20px 40px rgba(0,0,0,.15);
+      text-align:center; max-width:420px; width:92%;
+      position:relative; z-index:2;
+    }
+    h1{margin:0 0 14px}
+    p{margin:10px 0 22px}
+    .btns{display:flex; gap:14px; justify-content:center}
+    button{
+      border:none; cursor:pointer; border-radius:999px;
+      padding:12px 22px; font-size:16px; font-weight:700;
+      color:white; background:var(--btn);
+      transition:transform .15s ease, background .15s ease;
+    }
+    button:hover{background:var(--btn-hover); transform:translateY(-2px)}
+    .hidden{display:none}
+
+    /* Floating items (hearts + lilies) */
+    .float{
+      position:absolute; bottom:-40px; opacity:.9;
+      animation: rise linear infinite;
+      font-size:24px;
+      z-index:1;
+    }
+    @keyframes rise{
+      from{transform:translateY(0) translateX(0); opacity:0}
+      10%{opacity:1}
+      to{transform:translateY(-110vh) translateX(50px); opacity:0}
+    }
+
+    /* Balloons */
+    .balloon{
+      position:absolute; bottom:-120px; width:90px; height:120px;
+      border-radius:50% 50% 45% 45%;
+      background:#ffd1dc;
+      overflow:hidden;
+      animation: balloon 16s linear infinite;
+      box-shadow: inset 0 -10px 0 rgba(0,0,0,.08);
+      z-index:1;
+    }
+
+    /* subtle visible string */
+    .balloon::after{
+      content:'';
+      position:absolute;
+      left:50%; top:100%;
+      width:2px; height:80px;
+      background:rgba(255,255,255,.55);
+      transform:translateX(-50%);
+      border-radius:2px;
+    }
+
+    .balloon img{width:100%; height:100%; object-fit:cover}
+
+    @keyframes balloon{
+      from{transform:translateY(0) translateX(0)}
+      to{transform:translateY(-120vh) translateX(-40px)}
+    }
+
+    .big{font-size:40px}
+    .music{position:fixed; bottom:14px; right:14px; z-index:10}
+  </style>
+</head>
+<body>
+
+  <!-- MUSIC (AUTOPLAY ON START) -->
+  <!-- MUSIC (starts after user interaction – browser safe) -->
+  <audio id="bgm" loop preload="auto">
+    <source src="bb849cc3-d137-4d74-ac62-fbbe2e611218.mp3" type="audio/mpeg" />
+  </audio>
+  <div class="music">
+    <button id="musicBtn">🔇 Stop Music</button>
+  </div>
+
+  <!-- PAGE 1: QUESTION -->
+  <div class="page" id="pageQuestion">
+    <div class="card">
+      <h1>Hey Jaida 💖</h1>
+      <p>Will you be my Valentine?</p>
+      <div class="btns">
+        <button id="yesBtn">Yes!</button>
+        <button id="noBtn">No</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 2A: YES -->
+  <div class="page hidden" id="pageYes">
+    <div class="card">
+      <h1 class="big">LETS GOO!!! 💖</h1>
+      <!-- JAIDA HEART WORD REMOVED (per request) -->
+      <p>You just made me the happiest person ever 🥰</p>
+    </div>
+  </div>
+
+  <!-- PAGE 2B: NO -->
+  <div class="page hidden" id="pageNo">
+    <div class="card">
+      <p>Oh… okay 😔</p>
+      <div class="big">☹️</div>
+    </div>
+  </div>
+
+  <script>
+    // ===== CONFIG =====
+    const heartEmojis=['❤️','💖','💝','💗','💓'];
+    const lilyEmojis=['🌸','🌺','🌷','💮','🌼'];
+
+    const balloonImages=[
+      'https://media.discordapp.net/attachments/692284925256400936/1467026993035087882/IMG_8844.png?ex=697ee2db&is=697d915b&hm=2b0a9f78dfb3151e9a187b18ba02a14a28c50329261bcf70221e5034fe980471&=&format=webp&quality=lossless&width=1089&height=1338',
+      'https://media.discordapp.net/attachments/692284925256400936/1467026993341141177/IMG_8843.png?ex=697ee2db&is=697d915b&hm=b2d30ac4b02f7ff0baf5bc6922531f52f7026c0f05a7e0a7e0da24271bf2defb&=&format=webp&quality=lossless&width=750&height=1338',
+      'https://media.discordapp.net/attachments/692284925256400936/1467026993676550257/IMG_8842.png?ex=697ee2db&is=697d915b&hm=9720435218c549860d206986a92c880280597e82bfd79cb0aa2dc1e2a48d00cd&=&format=webp&quality=lossless&width=1092&height=1338'
+    ];
+
+    // ===== FLOATING HEARTS + LILIES =====
+    function spawnFloat(arr){
+      const el=document.createElement('div');
+      el.className='float';
+      el.textContent=arr[Math.floor(Math.random()*arr.length)];
+      el.style.left=Math.random()*100+'vw';
+      el.style.animationDuration=(10+Math.random()*10)+'s';
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),20000);
+    }
+
+    setInterval(()=>spawnFloat(heartEmojis),650);
+    setInterval(()=>spawnFloat(lilyEmojis),900);
+
+    // ===== BALLOONS =====
+    function spawnBalloon(img){
+      const b=document.createElement('div');
+      b.className='balloon';
+      b.style.left=Math.random()*100+'vw';
+      b.style.animationDuration=(14+Math.random()*6)+'s';
+      const i=document.createElement('img');
+      i.src=img;
+      b.appendChild(i);
+      document.body.appendChild(b);
+      setTimeout(()=>b.remove(),20000);
+    }
+
+    balloonImages.forEach((img,i)=>{
+      setTimeout(()=>spawnBalloon(img),i*1600);
+      setInterval(()=>spawnBalloon(img),10000+i*1500);
+    });
+
+    // ===== PAGE SWITCHING =====
+    const pageQuestion=document.getElementById('pageQuestion');
+    const pageYes=document.getElementById('pageYes');
+    const pageNo=document.getElementById('pageNo');
+
+    document.getElementById('yesBtn').onclick=()=>{
+      pageQuestion.classList.add('hidden');
+      pageYes.classList.remove('hidden');
+    };
+
+    document.getElementById('noBtn').onclick=()=>{
+      pageQuestion.classList.add('hidden');
+      pageNo.classList.remove('hidden');
+    };
+
+    // ===== MUSIC TOGGLE (starts playing automatically) =====
+    const bgm=document.getElementById('bgm');
+    const musicBtn=document.getElementById('musicBtn');
+
+    bgm.volume=0.5;
+
+    window.addEventListener('load',()=>{
+      bgm.play().catch(()=>{});
+    });
+
+    musicBtn.onclick=()=>{
+      if(bgm.paused){
+        bgm.play();
+        musicBtn.textContent='🔇 Stop Music';
+      }else{
+        bgm.pause();
+        musicBtn.textContent='🎵 Play Music';
+      }
+    };
+  </script>
+</body>
+</html>
