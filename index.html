@@ -223,18 +223,24 @@ setInterval(spawnBalloon, 2500);
     const musicBtn = document.getElementById('musicBtn');
 
     const START_TIME = 35; // 0:35
-    const END_TIME   = 98; // 1:38
-    
-    function tryStartMusic(){
-  // Browser-safe: starts only after a user gesture
-  if (bgm.readyState >= 2) {
+const END_TIME   = 98; // 1:38
+
+function tryStartMusic(){
+  const startPlayback = () => {
     bgm.currentTime = START_TIME;
-    bgm.play().catch(() => {});
-  } else {
-    bgm.addEventListener('loadedmetadata', () => {
-      bgm.currentTime = START_TIME;
+
+    const onSeeked = () => {
+      bgm.removeEventListener('seeked', onSeeked);
       bgm.play().catch(() => {});
-    }, { once: true });
+    };
+
+    bgm.addEventListener('seeked', onSeeked);
+  };
+
+  if (bgm.readyState >= 2) {
+    startPlayback();
+  } else {
+    bgm.addEventListener('loadedmetadata', startPlayback, { once: true });
   }
 }
 
