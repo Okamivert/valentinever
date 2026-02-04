@@ -153,11 +153,34 @@
     const lilyEmojis  = ['🌸','🌺','🌷','💮','🌼'];
 
     // Balloon images
-    const balloonImages = [
-      'balloon1',
-      'balloon2',
-      'balloon3'
-    ];
+    const balloonImages = ['balloon1','balloon2','balloon3'];
+let balloonIdx = 0;
+
+function spawnBalloon(){
+  const b = document.createElement('div');
+  b.className = 'balloon';
+  b.style.left = (Math.random() * 100) + 'vw';
+  b.style.animationDuration = (14 + Math.random() * 6) + 's';
+
+  // Cycle through your 3 photos
+  const imgSrc = balloonImages[balloonIdx % balloonImages.length];
+  balloonIdx++;
+
+  const img = document.createElement('img');
+  img.src = imgSrc;
+  img.alt = 'balloon photo';
+  img.style.width = '100%';
+  img.style.height = '100%';
+  img.style.objectFit = 'cover';
+
+  b.appendChild(img);
+  document.body.appendChild(b);
+
+  setTimeout(() => b.remove(), 20000);
+}
+
+// Spawn balloons continuously
+setInterval(spawnBalloon, 2500);
 
     // ===== FLOATING EMOJIS =====
     function spawnFloat(arr){
