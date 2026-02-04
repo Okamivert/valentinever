@@ -1,291 +1,120 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Will You Be My Valentine? 💖</title>
+setInterval(() => spawnFloat(heartEmojis), 650);
+setInterval(() => spawnFloat(lilyEmojis), 900);
 
-  <style>
-    :root{
-      --bg-start:#ffafbd;
-      --bg-end:#ffc3a0;
-      --btn:#ff6b6b;
-      --btn-hover:#ff8787;
-      --text:#ff4757;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; min-height:100vh; overflow:hidden;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color:var(--text);
-      background:linear-gradient(135deg,var(--bg-start),var(--bg-end));
-      display:flex; align-items:center; justify-content:center;
-    }
 
-    .page{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;}
-
-    .card{
-      background:rgba(255,255,255,.9);
-      padding:28px 32px; border-radius:18px;
-      box-shadow:0 20px 40px rgba(0,0,0,.15);
-      text-align:center; max-width:420px; width:92%;
-      position:relative; z-index:2;
-    }
-
-    h1{margin:0 0 14px}
-    p{margin:10px 0 22px}
-    .btns{display:flex; gap:14px; justify-content:center}
-
-    button{
-      border:none; cursor:pointer; border-radius:999px;
-      padding:12px 22px; font-size:16px; font-weight:700;
-      color:white; background:var(--btn);
-      transition:transform .15s ease, background .15s ease;
-    }
-    button:hover{background:var(--btn-hover); transform:translateY(-2px)}
-    .hidden{display:none}
-
-    /* floating hearts + lilies */
-    .float{
-      position:absolute;
-      bottom:-40px;
-      opacity:.9;
-      animation: rise linear infinite;
-      font-size:24px;
-      z-index:1;
-      user-select:none;
-      pointer-events:none;
-    }
-    @keyframes rise{
-      from{transform:translateY(0) translateX(0); opacity:0}
-      10%{opacity:1}
-      to{transform:translateY(-110vh) translateX(50px); opacity:0}
-    }
-
-    /* balloons with images */
-    .balloon{
-      position:absolute;
-      bottom:-120px;
-      width:100px;
-      height:140px;
-      border-radius:50% 50% 45% 45%;
-      background:#ffd1dc;
-      overflow:hidden;
-      animation: balloon 16s linear infinite;
-      box-shadow: inset 0 -10px 0 rgba(0,0,0,.08);
-      z-index:1;
-      user-select:none;
-      pointer-events:none;
-    }
-    .balloon img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-    }
-    .balloon::after{
-      content:'';
-      position:absolute;
-      left:50%;
-      top:100%;
-      width:2px;
-      height:80px;
-      background:rgba(255,255,255,.55);
-      transform:translateX(-50%);
-      border-radius:2px;
-    }
-    @keyframes balloon{
-      from{transform:translateY(0) translateX(0); opacity:0}
-      10%{opacity:1}
-      to{transform:translateY(-120vh) translateX(-40px); opacity:0}
-    }
-    }
-      10%{opacity:1}
-      to{transform:translateY(-120vh) translateX(-40px); opacity:0}
-    }
-
-    .big{font-size:40px}
-    .music{position:fixed; bottom:14px; right:14px; z-index:10}
-  </style>
-</head>
-<body>
-
-  <!-- MUSIC (GitHub Pages friendly)
-       Put song.mp3 in the same folder as index.html in your GitHub repo -->
-  <audio id="bgm" loop preload="auto">
-    <source src="song.mp3.mp3" type="audio/mpeg" />
-  </audio>
-  <div class="music">
-    <button id="musicBtn">🔇 Stop Music</button>
-  </div>
-
-  <!-- PAGE 1 -->
-  <div class="page" id="pageQuestion">
-    <div class="card">
-      <h1>Hey 💖</h1>
-      <p>Will you be my Valentine?</p>
-      <div class="btns">
-        <button id="yesBtn">Yes!</button>
-        <button id="noBtn">No</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- YES PAGE -->
-  <div class="page hidden" id="pageYes">
-    <div class="card">
-      <h1 class="big">LETS GOO!!! 💖</h1>
-      <p>I told you'd like it🥰</p>
-    </div>
-  </div>
-
-  <!-- NO PAGE -->
-  <div class="page hidden" id="pageNo">
-    <div class="card">
-      <p>Oh… okay 😔</p>
-      <div class="big">☹️</div>
-    </div>
-  </div>
-
-  <script>
-    // ===== CONFIG =====
-    const heartEmojis = ['❤️','💖','💝','💗','💓'];
-    const lilyEmojis  = ['🌸','🌺','🌷','💮','🌼'];
-
-    // Balloon images
-    const balloonImages = ['balloon1','balloon2','balloon3'];
-let balloonIdx = 0;
-
+// ===== BALLOONS =====
 function spawnBalloon(){
-  const b = document.createElement('div');
-  b.className = 'balloon';
-  b.style.left = (Math.random() * 100) + 'vw';
-  b.style.animationDuration = (14 + Math.random() * 6) + 's';
+const b = document.createElement('div');
+b.className = 'balloon';
+b.style.left = (Math.random() * 100) + 'vw';
+b.style.animationDuration = (14 + Math.random() * 6) + 's';
 
-  // Cycle through your 3 photos
-  const imgSrc = balloonImages[balloonIdx % balloonImages.length];
-  balloonIdx++;
 
-  const img = document.createElement('img');
-  img.src = imgSrc;
-  img.alt = 'balloon photo';
-  img.style.width = '100%';
-  img.style.height = '100%';
-  img.style.objectFit = 'cover';
+const img = document.createElement('img');
+img.src = balloonImages[balloonIdx % balloonImages.length];
+img.alt = 'balloon photo';
+balloonIdx++;
 
-  b.appendChild(img);
-  document.body.appendChild(b);
 
-  setTimeout(() => b.remove(), 20000);
+// Helpful debug if an image filename/path is wrong on GitHub Pages
+img.onerror = () => console.log('Balloon image failed to load:', img.src);
+
+
+b.appendChild(img);
+document.body.appendChild(b);
+setTimeout(() => b.remove(), 20000);
 }
 
-// Spawn balloons continuously
+
 setInterval(spawnBalloon, 2500);
 
-    // ===== FLOATING EMOJIS =====
-    function spawnFloat(arr){
-      const el = document.createElement('div');
-      el.className = 'float';
-      el.textContent = arr[Math.floor(Math.random() * arr.length)];
-      el.style.left = (Math.random() * 100) + 'vw';
-      el.style.animationDuration = (10 + Math.random() * 10) + 's';
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 20000);
-    }
 
-    // Hearts and lilies float continuously on all pages
-    setInterval(() => spawnFloat(heartEmojis), 650);
-    setInterval(() => spawnFloat(lilyEmojis),  900);
+// ===== PAGE SWITCHING + MUSIC (segment loop 0:35 to 1:37) =====
+const pageQuestion = document.getElementById('pageQuestion');
+const pageYes = document.getElementById('pageYes');
+const pageNo = document.getElementById('pageNo');
+const bgm = document.getElementById('bgm');
+const musicBtn = document.getElementById('musicBtn');
 
-    // ===== BALLOONS =====
-    function spawnBalloon(){
-      const b = document.createElement('div');
-      b.className = 'balloon';
-      b.style.left = (Math.random() * 100) + 'vw';
-      b.style.animationDuration = (14 + Math.random() * 6) + 's';
 
-      const img = document.createElement('img');
-      img.src = balloonImages[Math.floor(Math.random() * balloonImages.length)];
-      b.appendChild(img);
+const START_TIME = 35; // 0:35
+const END_TIME = 97; // 1:37
 
-      document.body.appendChild(b);
-      setTimeout(() => b.remove(), 20000);
-    }
 
-    // Spawn balloons continuously (FIXED: removed bad img reference + stray bracket)
-    setInterval(spawnBalloon, 3000);
+let segmentLoopArmed = false;
 
-    // ===== PAGE SWITCHING + MUSIC =====
-    const pageQuestion = document.getElementById('pageQuestion');
-    const pageYes = document.getElementById('pageYes');
-    const pageNo = document.getElementById('pageNo');
-    const bgm = document.getElementById('bgm');
-    const musicBtn = document.getElementById('musicBtn');
 
-    const START_TIME = 35; // 0:35
-const END_TIME   = 98; // 1:38
+function armSegmentLoop(){
+if (segmentLoopArmed) return;
+segmentLoopArmed = true;
 
-function tryStartMusic(){
-  const startPlayback = () => {
-    bgm.currentTime = START_TIME;
 
-    const onSeeked = () => {
-      bgm.removeEventListener('seeked', onSeeked);
-      bgm.play().catch(() => {});
-    };
-
-    bgm.addEventListener('seeked', onSeeked);
-  };
-
-  if (bgm.readyState >= 2) {
-    startPlayback();
-  } else {
-    bgm.addEventListener('loadedmetadata', startPlayback, { once: true });
-  }
+bgm.addEventListener('timeupdate', () => {
+// Don't force-play here; just jump time. This prevents "late start"/stutters.
+if (!bgm.paused && bgm.currentTime >= END_TIME) {
+bgm.currentTime = START_TIME;
+}
+});
 }
 
-    bgm.addEventListener('timeupdate', () => {
-  if (!bgm.paused && bgm.currentTime >= END_TIME) {
-    bgm.currentTime = START_TIME;
-    bgm.play().catch(() => {});
-  }
-});
 
-    document.getElementById('yesBtn').onclick = () => {
-      tryStartMusic();
-      pageQuestion.classList.add('hidden');
-      pageYes.classList.remove('hidden');
-    };
+function playSegment(){
+armSegmentLoop();
 
-    document.getElementById('noBtn').onclick = () => {
-      tryStartMusic();
-      pageQuestion.classList.add('hidden');
-      pageNo.classList.remove('hidden');
-    };
 
-    musicBtn.onclick = () => {
-      if (bgm.paused) {
-        bgm.play().catch(() => {});
-        musicBtn.textContent = '🔇 Stop Music';
-      } else {
-        bgm.pause();
-        musicBtn.textContent = '🎵 Play Music';
-      }
-    };
+const startPlayback = () => {
+// Seek first, then play only after seek completes
+const onSeeked = () => {
+bgm.removeEventListener('seeked', onSeeked);
+bgm.play().then(() => {
+musicBtn.textContent = '🔇 Stop Music';
+}).catch(() => {});
+};
 
-    // ===== LIGHTWEIGHT SELF-TESTS (console) =====
-    // These do not change behavior; they help catch broken IDs / missing files.
-    (function runSelfTests(){
-      console.assert(!!pageQuestion && !!pageYes && !!pageNo, 'Missing one or more page containers');
-      console.assert(!!document.getElementById('yesBtn') && !!document.getElementById('noBtn'), 'Missing Yes/No buttons');
-      console.assert(!!bgm, 'Missing audio element');
-      // Ensure the audio source exists (won't confirm network success, but catches empty src)
-      const srcEl = bgm.querySelector('source');
-      console.assert(srcEl && srcEl.getAttribute('src'), 'Audio <source> src is missing');
-    })();
-  </script>
-</body>
-</html>
 
+bgm.addEventListener('seeked', onSeeked);
+bgm.currentTime = START_TIME;
+};
+
+
+if (bgm.readyState >= 2) startPlayback();
+else bgm.addEventListener('loadedmetadata', startPlayback, { once: true });
+}
+
+
+document.getElementById('yesBtn').onclick = () => {
+playSegment();
+pageQuestion.classList.add('hidden');
+pageYes.classList.remove('hidden');
+};
+
+
+document.getElementById('noBtn').onclick = () => {
+playSegment();
+pageQuestion.classList.add('hidden');
+pageNo.classList.remove('hidden');
+};
+
+
+musicBtn.onclick = () => {
+if (bgm.paused) {
+playSegment();
+} else {
+bgm.pause();
+musicBtn.textContent = '🎵 Play Music';
+}
+};
+
+
+// ===== LIGHTWEIGHT SELF-TESTS (console) =====
+(function runSelfTests(){
+console.assert(!!pageQuestion && !!pageYes && !!pageNo, 'Missing one or more page containers');
+console.assert(!!document.getElementById('yesBtn') && !!document.getElementById('noBtn'), 'Missing Yes/No buttons');
+console.assert(!!bgm, 'Missing audio element');
+const srcEl = bgm.querySelector('source');
+console.assert(srcEl && srcEl.getAttribute('src') === 'song.mp3', 'Audio src should be song.mp3');
+})();
+</script>
 </body>
 </html>
